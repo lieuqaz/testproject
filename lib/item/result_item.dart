@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproject/add_objectives.dart';
 import 'package:testproject/item/form_field_widget.dart';
 import 'package:testproject/item/preference.dart';
@@ -55,7 +52,6 @@ class _ResultItemState extends State<ResultItem> {
   @override
   void initState() {
     super.initState();
-
     type = typeofKR[0];
     criter = criterias[0];
     if (widget.objectModel.criteria != null) {
@@ -68,7 +64,7 @@ class _ResultItemState extends State<ResultItem> {
     }
   }
 
-  Future<void> addList() async {
+  void addList() {
     objectModel = ObjectModel(
         result: keyrs.text,
         typekr: type,
@@ -77,11 +73,12 @@ class _ResultItemState extends State<ResultItem> {
         target: target.text,
         unit: unit.text,
         date: date);
+
     listResult.add(objectModel!);
   }
 
-  void saveObject() {
-    preferenceUtils.init(widget.objectives, objectModel, listResult);
+  void saveObjects() {
+    preferenceUtils.init(widget.objectives, listResult);
   }
 
   void validate() {
@@ -89,6 +86,7 @@ class _ResultItemState extends State<ResultItem> {
       // await addObject.addObject(widget.objectives, getRandomString(20));
       addObject.addResult(widget.id, keyrs.text, type, criter, start.text,
           target.text, unit.text, date);
+      preferenceUtils.clear();
     }
   }
 
@@ -96,12 +94,10 @@ class _ResultItemState extends State<ResultItem> {
   Widget build(BuildContext context) {
     if (widget.request) {
       validate();
-      preferenceUtils.clear();
     }
-    addList();
-    print(jsonEncode(listResult));
     if (widget.cache) {
-      saveObject();
+      addList();
+      saveObjects();
     }
     final orientation = MediaQuery.of(context).orientation;
     return Column(

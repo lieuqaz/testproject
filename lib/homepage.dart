@@ -35,15 +35,27 @@ class _HomePageState extends State<HomePage> {
       object.text = ob;
     });
   }
+  // Future<void> getResult() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
 
+  //   final List<dynamic> jsonData =
+  //       jsonDecode(prefs.getString('result') ?? '[]');
+  //   listResult = jsonData.map((e) => ObjectModel.fromJson(e)).toList();
+  //   if (listResult.length > 1) {
+  //     count = listResult.length;
+  //   }
+  // }
   Future<void> getResult() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    final List<dynamic> jsonData =
-        jsonDecode(prefs.getString('result') ?? '[]');
-    listResult = jsonData.map((e) => ObjectModel.fromJson(e)).toList();
-    if (listResult.length > 1) {
-      count = listResult.length;
+    List<Map<String, dynamic>> lists = [];
+    final List<String> jsonData = prefs.getStringList('result') ?? [];
+    jsonData.forEach((element) {
+      lists.add(jsonDecode(element));
+    });
+    listResult = lists.map((e) => ObjectModel.fromJson(e)).toList();
+    // listResult = jsonData!.map((e) =>e.map).toList();
+    if (lists.length > 1) {
+      count = lists.length;
     }
   }
 
@@ -82,7 +94,7 @@ class _HomePageState extends State<HomePage> {
                 Container(
                     padding: const EdgeInsets.only(top: 2, left: 1),
                     color: const Color.fromARGB(255, 211, 221, 230),
-                    child: listResult.length > 0
+                    child: listResult.isNotEmpty
                         ? ListView.builder(
                             shrinkWrap: true,
                             itemBuilder: (context, index) => ResultItem(
@@ -102,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                         : ListView.builder(
                             shrinkWrap: true,
                             itemBuilder: (context, index) => ResultItem(
-                              listOb: [],
+                              listOb: const [],
                               objectModel: ObjectModel(),
                               objectives: object.text,
                               cache: cache,
